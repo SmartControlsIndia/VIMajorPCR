@@ -1,0 +1,71 @@
+﻿<div class="common-box col-sm-11">
+
+    <div class="col-sm-5">
+
+        <div class="form-horizontal" id="VIForm" style="margin-top: 3%;">
+            <div class="form-group">
+                <label class="col-sm-5 big-font">Work Center</label>
+                <label id="wcNameLabel" style="font-weight:bold"class="col-sm-7 text-danger big-font"></label>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 big-font">Barcode</label>
+                <div class="col-sm-7 big-font">
+                    <input type="text"id="txtbarcode" maxlength="10" class="form-control"/>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:30px;">
+                <input id="okBtn" onclick="openDefectModal('57');" class="btn btn-success marginLeft15px big-btn" type="button" value="PASS-3" disabled="disabled"/>
+                <input id="holdBtn" onclick="openDefectModal('55');" class="btn btn-warning marginLeft15px big-btn" type="button" value="Erratic Hold" disabled="disabled"/>
+                <input id="scrapBtn" onclick="openDefectModal('56');" class="btn btn-danger marginLeft15px big-btn" type="button" value="Major Hold" disabled="disabled"/>
+            </div>
+            <div class="form-group" style="margin-top:30px; font-size:18px" id="messageDiv"></div>
+        </div>
+
+        <div class="col-sm-12" id="container-chart" style="height: 240px; margin: 0 auto;margin-top:1.5px;width:100%;padding:0;">
+        </div>
+
+    </div>
+
+    <div class="col-sm-7" style="color:#000;margin-top:1%;height:500px;overflow:auto;padding:0px;">
+        <h4 class="">TBM Details:</h4>
+        <table class="table table-bordered table-hover nopaddingtable">
+            <thead>
+                <tr>
+                    <th>WCName</th>
+                    <th>Recipe</th>
+                    <th>Opertor Name</th>
+                    <th>DateTime</th>
+                </tr>
+            </thead>
+            <tbody id="tbmInfoTbl"></tbody>
+        </table>
+
+        <h4 class="">Curing Details:</h4>
+        <table class="table table-bordered table-hover nopaddingtable">
+            <thead>
+                <tr>
+                    <th>WCName</th>
+                    <th>Recipe</th>
+                    <th>Opertor Name</th>
+                    <th>DateTime</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="CuringInfoTbl"></tbody>
+        </table>
+
+        <h4 class="">Visual Inspection Previous Details:</h4>
+        <table class="table table-bordered table-hover nopaddingtable">
+            <thead>
+                <tr>
+                    <th>WCName</th>
+                    <th>Status</th>
+                    <th>Opertor Name</th>
+                    <th>DateTime</th>
+                </tr>
+            </thead>
+            <tbody id="VIInfoTbl"></tbody>
+        </table>
+    </div>
+
+</div>
