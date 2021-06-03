@@ -184,8 +184,9 @@
 
         <script src="Assets/JS/jquery.min.js"></script>
         <script src="Assets/Bootstrap/bootstrap.min.js"></script>
+         <script src="Assets/JS/highcharts.js"></script>
         <script src="config.js?ver=1.0"></script>
-        <script src="VIMajor.js?ver=0.5"></script>
+        <script src="VIMajor.js?ver=0.8"></script>
     </body>
 
 </html>

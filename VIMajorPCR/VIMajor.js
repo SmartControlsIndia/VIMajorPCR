@@ -99,7 +99,7 @@ function loadPage() {
             $("#txtbarcode").focus();
 
             autoLogoutVar = setInterval(autoLogout, 10000);
-
+            getScannedDataCountnewHMI();
             getScannedDataCountUserWise();
         });
     }
@@ -154,11 +154,12 @@ function getBarcodeDetails(barcode) {
 
                 var tbm = 0;
                 var curing = 0;
+                var trim = 0;
                 var vi = 0;
                 var html = '';
                 var superMode = 0;
 
-                $("#tbmInfoTbl, #CuringInfoTbl, #VIInfoTbl").empty();
+                $("#tbmInfoTbl, #CuringInfoTbl, #TrimInfoTbl,#VIInfoTbl").empty();
 
                 if (data['tbmData'].length) {
                     for (tbm = 0; tbm < data['tbmData'].length; tbm++) {
@@ -190,7 +191,17 @@ function getBarcodeDetails(barcode) {
                 }
 
                 html = '';
+                //trim//
+                if (data['trimData'].length) {
+                    for (trim = 0; trim < data['trimData'].length; trim++) {
+                        html += '<tr><td>' + data['trimData'][trim].wcname + '</td><td>' + data['trimData'][trim].recipe + '</td><td>' + data['trimData'][trim].datetime + '</td></tr>';
+                    }
 
+                    $("#TrimInfoTbl").html(html);
+                }
+
+                html = '';
+                //trim end
                 if (data['viData'].length) {
                     for (vi = 0; vi < data['viData'].length; vi++) {
                         html += '<tr><td>' + data['viData'][vi].wcname + '</td><td>' + data['viData'][vi].status + '</td><td>' + data['viData'][vi].manning + '</td><td>' + data['viData'][vi].datetime + '</td></tr>';
@@ -330,9 +341,10 @@ function saveBarcodeDetails(statusID, defectLocationID, defectStatusID, ssORnss)
                         var htm = '';
 
                         $("#okBtn, #holdBtn").prop("disabled", false);
-
+                        //getScannedDataCountnewHMI();
                         if (data == "1") {
                             htm = '<div class="text-success"><span class="glyphicon glyphicon-ok font20px"></span> Barcode: ' + barcode + ' saved successfully.</div >';
+                            getScannedDataCountnewHMI();
                             getScannedDataCountUserWise();
                         }
                         else if (data == "-1") {
@@ -358,6 +370,32 @@ function saveBarcodeDetails(statusID, defectLocationID, defectStatusID, ssORnss)
         var htm = '<div class="text-danger"><span class="glyphicon glyphicon-remove font20px"></span>Please scan barcode first!</div >';
         $("#messageDiv").html(htm);
     }
+}
+
+function getScannedDataCountnewHMI() {
+
+    if (sessionStorage.getItem("wcID") != undefined && sessionStorage.getItem("wcID") != null && sessionStorage.getItem("wcID") != "") {
+        $.ajax(
+            {
+                url: "http://" + URL + "/CTPWebAPI/api/VisualInspection/getScannedDataCountnewHMI",
+                type: 'post',
+                data: "{wcID: '" + sessionStorage.getItem("wcID") + "', area: 'PCR', table: 'vInspectionPCR'}",
+                datatype: 'jsonp',
+                crossDomain: true,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    var data = JSON.parse(response);
+
+                    if (data.length) {
+                        drawChart(data);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+    }
+
 }
 
 function getScannedDataCountUserWise() {
@@ -651,4 +689,74 @@ function updateWCAfterAutoLogout() {
                 alert(error);
             }
         });
+}
+
+function drawChart(data) {
+    
+    var AshiftOK = parseInt(data[0].AshiftOK);
+    var AshiftMinor = parseInt(data[0].AshiftMinor);
+    var AshiftMajor = parseInt(data[0].AshiftMajor);
+    var BshiftOK = parseInt(data[0].BshiftOK);
+    var BshiftMinor = parseInt(data[0].BshiftMinor);
+    var BshiftMajor = parseInt(data[0].BshiftMajor);
+    var CshiftOK = parseInt(data[0].CshiftOK);
+    var CshiftMinor = parseInt(data[0].CshiftMinor);
+    var CshiftMajor = parseInt(data[0].CshiftMajor);
+
+    var ATotal = AshiftOK + AshiftMinor + AshiftMajor;
+    var BTotal = BshiftOK + BshiftMinor + BshiftMajor;
+    var CTotal = CshiftOK + CshiftMinor + CshiftMajor;
+   // alert(ATotal); alert(BTotal);    //console.log(dataArray);
+    Highcharts.chart('container-chart', {       
+        colors: ['#058DC7', '#50B432', '#ec971f', '#c9302c'],
+
+        chart: {
+            type: 'column'
+        },
+        yAxis: {
+
+            min: 1,
+            title: {
+                text: 'Tyre In Numbers'
+            }
+        },
+        xAxis: {
+            categories: ['Shift A', 'Shift B', 'Shift C']
+        },
+        credits: {
+            enabled: false
+        },
+        plotOptions: {
+            column: {
+                //stacking: 'normal',
+                dataLabels: {
+                    enabled: true,
+                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'black'
+                }
+            }
+        },
+
+        series: [
+            {
+                name: 'Total Checked',
+                data: [ATotal, BTotal, CTotal]
+            },
+            {
+                name: 'Pass-3',
+                data: [AshiftOK, BshiftOK, CshiftOK]
+            },
+            {
+                name: 'Erractic-Hold',
+                data: [AshiftMinor, BshiftMinor, CshiftMinor]
+            },
+            {
+                name: 'Major-Hold',
+                data: [AshiftMajor, BshiftMajor, CshiftMajor]
+            }
+        ]
+
+    });
+
+    $('.highcharts-text-outline').removeAttr("stroke");
+
 }
